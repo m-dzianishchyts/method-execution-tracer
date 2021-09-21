@@ -1,82 +1,43 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Reflection;
+using System.Threading;
 
 namespace Tracer.Core
 {
-    public class Tracer : ITracer
+    public sealed class Tracer : ITracer
     {
-        private long _executionTime;
-        private string _typeName;
-        private string _methodName;
-        private readonly Stopwatch _stopwatch;
+        private readonly ConcurrentDictionary<int, ThreadTracer> _threadsTraceResults;
 
         public Tracer()
         {
-            _executionTime = 0;
-            _methodName = "";
-            _typeName = "";
-            _stopwatch = new Stopwatch();
+            _threadsTraceResults = new ConcurrentDictionary<int, ThreadTracer>();
         }
 
         public void StartTrace()
         {
-            var callingMethod = new StackFrame(1).GetMethod();
-            if (callingMethod == null)
-            {
-                throw new TracerException("Not enough stack frames to find calling method.");
-            }
-
-            _typeName = callingMethod.GetType().Name;
-            _methodName = callingMethod.Name;
-            _stopwatch.Start();
+            var stackTrace = new StackTrace();
+            StackFrame targetFrame = stackTrace.GetFrame(1)!;
+            MethodBase targetMethod = targetFrame.GetMethod()!;
+            ThreadTracer threadTracer =
+                _threadsTraceResults.GetOrAdd(Thread.CurrentThread.ManagedThreadId, new ThreadTracer());
+            threadTracer.StartTrace(targetMethod);
         }
 
         public void StopTrace()
         {
-            if (!_stopwatch.IsRunning)
+            ThreadTracer? threadsTraceResult;
+            if (!_threadsTraceResults.TryGetValue(Thread.CurrentThread.ManagedThreadId, out threadsTraceResult))
             {
-                throw new TracerException($"{nameof(StartTrace)} method has been not called yet. " +
-                                          "Stopwatch is not running.");
+                throw new ArgumentException("This thread is not being traced now.");
             }
-
-            var callingMethod = new StackFrame(1).GetMethod();
-            if (callingMethod == null)
-            {
-                throw new TracerException("Not enough stack frames to find calling method.");
-            }
-
-            var methodName = callingMethod.Name;
-            var typeName = callingMethod.GetType().Name;
-            if (!Equals(methodName, _methodName) || !Equals(typeName, _typeName))
-            {
-                throw new TracerException("Tracer must be stopped in the method " +
-                                          $"in which it was started: {_typeName}:{_methodName}().");
-            }
-
-            _stopwatch.Stop();
-            try
-            {
-                _executionTime = Convert.ToInt64(_stopwatch.Elapsed.TotalMilliseconds);
-            }
-            catch (OverflowException)
-            {
-                _executionTime = long.MaxValue;
-            }
-            finally
-            {
-                _stopwatch.Reset();
-            }
+            threadsTraceResult.StopTrace();
         }
 
         public TraceResult GetTraceResult()
         {
-            if (_typeName == null || _methodName == null)
-            {
-                throw new TracerException("Tracer has been not started yet.");
-            }
-
-            var traceResult = new TraceResult(_typeName, _methodName, _executionTime);
-            return traceResult;
+            return new TraceResult(_threadsTraceResults);
         }
     }
 }
