@@ -1,15 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 
-namespace Tracer.Core
+namespace Tracer
 {
-    public sealed class TraceResult
+    namespace Core
     {
-        public ImmutableDictionary<int, ThreadTracer> ThreadsTraceResults { get; }
-
-        internal TraceResult(IDictionary<int, ThreadTracer> threadsTraceResults)
+        public sealed class TraceResult
         {
-            ThreadsTraceResults = threadsTraceResults.ToImmutableDictionary();
+            public ImmutableDictionary<string, ThreadTracer> ThreadsTraceResults { get; }
+
+            internal TraceResult(IDictionary<string, ThreadTracer> threadsTraceResults)
+            {
+                ThreadsTraceResults = threadsTraceResults.ToImmutableDictionary();
+            }
         }
     }
 }

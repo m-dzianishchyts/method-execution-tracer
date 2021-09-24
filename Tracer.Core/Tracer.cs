@@ -4,40 +4,46 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 
-namespace Tracer.Core
+namespace Tracer
 {
-    public sealed class Tracer : ITracer
+    namespace Core
     {
-        private readonly ConcurrentDictionary<int, ThreadTracer> _threadsTraceResults;
-
-        public Tracer()
+        public sealed class Tracer : ITracer
         {
-            _threadsTraceResults = new ConcurrentDictionary<int, ThreadTracer>();
-        }
+            private readonly ConcurrentDictionary<string, ThreadTracer> _threadsTraceResults = new();
 
-        public void StartTrace()
-        {
-            var stackTrace = new StackTrace();
-            StackFrame targetFrame = stackTrace.GetFrame(1)!;
-            MethodBase targetMethod = targetFrame.GetMethod()!;
-            ThreadTracer threadTracer =
-                _threadsTraceResults.GetOrAdd(Thread.CurrentThread.ManagedThreadId, new ThreadTracer());
-            threadTracer.StartTrace(targetMethod);
-        }
-
-        public void StopTrace()
-        {
-            ThreadTracer? threadsTraceResult;
-            if (!_threadsTraceResults.TryGetValue(Thread.CurrentThread.ManagedThreadId, out threadsTraceResult))
+            public void StartTrace()
             {
-                throw new ArgumentException("This thread is not being traced now.");
+                var stackTrace = new StackTrace();
+                StackFrame targetFrame = stackTrace.GetFrame(1)!;
+                MethodBase targetMethod = targetFrame.GetMethod()!;
+                string threadName = DetermineCurrentThreadName();
+                ThreadTracer threadTracer = _threadsTraceResults.GetOrAdd(threadName, new ThreadTracer(threadName));
+                threadTracer.StartTrace(targetMethod);
             }
-            threadsTraceResult.StopTrace();
-        }
 
-        public TraceResult GetTraceResult()
-        {
-            return new TraceResult(_threadsTraceResults);
+            private static string DetermineCurrentThreadName()
+            {
+                Thread currentThread = Thread.CurrentThread;
+                string threadName = currentThread.Name ?? currentThread.ManagedThreadId.ToString();
+                return threadName;
+            }
+
+            public void StopTrace()
+            {
+                ThreadTracer? threadsTraceResult;
+                if (!_threadsTraceResults.TryGetValue(DetermineCurrentThreadName(), out threadsTraceResult))
+                {
+                    throw new ArgumentException("This thread is not being traced now.");
+                }
+
+                threadsTraceResult.StopTrace();
+            }
+
+            public TraceResult GetTraceResult()
+            {
+                return new TraceResult(_threadsTraceResults);
+            }
         }
     }
 }
