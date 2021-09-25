@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json.Serialization;
-using Tracer.Util;
+using Tracer.Format;
 
 namespace Tracer
 {
@@ -14,17 +14,17 @@ namespace Tracer
             private readonly IList<MethodTracer> _nestedMethodsTracers;
             private readonly Stopwatch _stopwatch;
 
-            [JsonPropertyName("class")]
+            [JsonPropertyName(SerializationConfig.JSON_METHOD_CLASS)]
             public string TypeName { get; }
 
-            [JsonPropertyName("name")]
+            [JsonPropertyName(SerializationConfig.JSON_METHOD_NAME)]
             public string MethodName { get; }
 
-            [JsonPropertyName("time")]
+            [JsonPropertyName(SerializationConfig.JSON_METHOD_TIME)]
             [JsonConverter(typeof(JsonTimeMsConverter))]
             public long ExecutionTime => _stopwatch.ElapsedMilliseconds;
 
-            [JsonPropertyName("methods")]
+            [JsonPropertyName(SerializationConfig.JSON_METHOD_INNER_METHODS)]
             public IEnumerable<MethodTracer> NestedMethodsTracers => _nestedMethodsTracers;
 
             internal MethodTracer(MethodBase method)

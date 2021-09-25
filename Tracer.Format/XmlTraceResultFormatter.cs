@@ -2,7 +2,6 @@
 using System.Xml;
 using System.Xml.Linq;
 using Tracer.Core;
-using Tracer.Util;
 
 namespace Tracer
 {
@@ -13,7 +12,7 @@ namespace Tracer
             public void Format(Stream outputStream, TraceResult traceResult)
             {
                 var xDocument = new XDocument();
-                var rootElement = new XElement("root");
+                var rootElement = new XElement(SerializationConfig.XML_ROOT);
                 foreach (ThreadTracer threadTracer in traceResult.ThreadsTraceResults.Values)
                 {
                     XElement threadElement = ConvertThreadTracerToXElement(threadTracer);
@@ -28,9 +27,9 @@ namespace Tracer
 
             private static XElement ConvertThreadTracerToXElement(ThreadTracer threadTracer)
             {
-                var threadElement = new XElement("thread");
-                threadElement.Add(new XAttribute("id", threadTracer.ThreadName));
-                threadElement.Add(new XAttribute("time",
+                var threadElement = new XElement(SerializationConfig.XML_THREAD);
+                threadElement.Add(new XAttribute(SerializationConfig.XML_THREAD_NAME, threadTracer.ThreadName));
+                threadElement.Add(new XAttribute(SerializationConfig.XML_THREAD_TIME,
                                                  TimeFormatUtil.FormatMilliseconds(threadTracer.ExecutionTime)));
                 foreach (MethodTracer methodTracer in threadTracer.MethodsTracers)
                 {
@@ -43,10 +42,10 @@ namespace Tracer
 
             private static XElement ConvertMethodTracerToXElement(MethodTracer methodTraceInfo)
             {
-                var xElement = new XElement("method");
-                xElement.Add(new XAttribute("class", methodTraceInfo.TypeName));
-                xElement.Add(new XAttribute("name", methodTraceInfo.MethodName));
-                xElement.Add(new XAttribute("time",
+                var xElement = new XElement(SerializationConfig.XML_METHOD);
+                xElement.Add(new XAttribute(SerializationConfig.XML_METHOD_CLASS, methodTraceInfo.TypeName));
+                xElement.Add(new XAttribute(SerializationConfig.XML_METHOD_NAME, methodTraceInfo.MethodName));
+                xElement.Add(new XAttribute(SerializationConfig.XML_METHOD_TIME,
                                             TimeFormatUtil.FormatMilliseconds(methodTraceInfo.ExecutionTime)));
                 foreach (MethodTracer nestedMethodTraceInfo in methodTraceInfo.NestedMethodsTracers)
                 {

@@ -4,13 +4,15 @@ using System.Text.Json.Serialization;
 
 namespace Tracer
 {
-    namespace Util
+    namespace Format
     {
         public class JsonTimeMsConverter : JsonConverter<long>
         {
+            private const string ON_NULL_DEFAULT_TIME = "0";
+
             public override long Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
-                string formattedTime = reader.GetString() ?? "0";
+                string formattedTime = reader.GetString() ?? ON_NULL_DEFAULT_TIME;
                 long numericTime = TimeFormatUtil.ExtractNumericTime(formattedTime);
                 return numericTime;
             }

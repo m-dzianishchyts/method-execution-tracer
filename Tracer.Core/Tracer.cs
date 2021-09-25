@@ -10,12 +10,14 @@ namespace Tracer
     {
         public sealed class Tracer : ITracer
         {
+            private const int INDEX_OF_PREVIOUS_STACK_FRAME = 1;
+
             private readonly ConcurrentDictionary<string, ThreadTracer> _threadsTraceResults = new();
 
             public void StartTrace()
             {
                 var stackTrace = new StackTrace();
-                StackFrame targetFrame = stackTrace.GetFrame(1)!;
+                StackFrame targetFrame = stackTrace.GetFrame(INDEX_OF_PREVIOUS_STACK_FRAME)!;
                 MethodBase targetMethod = targetFrame.GetMethod()!;
                 string threadName = DetermineCurrentThreadName();
                 ThreadTracer threadTracer = _threadsTraceResults.GetOrAdd(threadName, new ThreadTracer(threadName));

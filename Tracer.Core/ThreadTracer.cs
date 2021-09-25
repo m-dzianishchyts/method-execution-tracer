@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json.Serialization;
-using Tracer.Util;
+using Tracer.Format;
 
 namespace Tracer
 {
@@ -14,14 +14,14 @@ namespace Tracer
             private readonly List<MethodTracer> _methodsTracers;
             private readonly Stack<MethodTracer> _callStack;
 
-            [JsonPropertyName("name")]
+            [JsonPropertyName(SerializationConfig.JSON_THREAD_NAME)]
             public string ThreadName { get; }
 
-            [JsonPropertyName("time")]
+            [JsonPropertyName(SerializationConfig.JSON_THREAD_TIME)]
             [JsonConverter(typeof(JsonTimeMsConverter))]
             public long ExecutionTime => _methodsTracers.Select(methodTracer => methodTracer.ExecutionTime).Sum();
 
-            [JsonPropertyName("methods")]
+            [JsonPropertyName(SerializationConfig.JSON_THREAD_METHODS)]
             public IEnumerable<MethodTracer> MethodsTracers => _methodsTracers;
 
             internal ThreadTracer(string threadName)
