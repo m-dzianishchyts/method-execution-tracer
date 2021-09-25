@@ -9,7 +9,24 @@ namespace Tracer
     {
         public sealed class XmlTraceResultFormatter : ITraceResultFormatter
         {
+            private static readonly XmlWriterSettings XmlWriterSettings = new()
+                {OmitXmlDeclaration = true, Indent = true};
+
             public void Format(Stream outputStream, TraceResult traceResult)
+            {
+                XDocument xDocument = FormatToXDocument(traceResult);
+                using XmlWriter xmlWriter = XmlWriter.Create(outputStream, XmlWriterSettings);
+                xDocument.Save(xmlWriter);
+            }
+
+            public void Format(TextWriter textWriter, TraceResult traceResult)
+            {
+                XDocument xDocument = FormatToXDocument(traceResult);
+                using XmlWriter xmlWriter = XmlWriter.Create(textWriter, XmlWriterSettings);
+                xDocument.Save(xmlWriter);
+            }
+
+            private static XDocument FormatToXDocument(TraceResult traceResult)
             {
                 var xDocument = new XDocument();
                 var rootElement = new XElement(SerializationConfig.XML_ROOT);
@@ -20,9 +37,7 @@ namespace Tracer
                 }
 
                 xDocument.Add(rootElement);
-                XmlWriterSettings xws = new() {OmitXmlDeclaration = true, Indent = true};
-                using XmlWriter xmlWriter = XmlWriter.Create(outputStream, xws);
-                xDocument.Save(xmlWriter);
+                return xDocument;
             }
 
             private static XElement ConvertThreadTracerToXElement(ThreadTracer threadTracer)

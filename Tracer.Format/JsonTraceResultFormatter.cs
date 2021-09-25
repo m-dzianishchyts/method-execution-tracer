@@ -12,6 +12,18 @@ namespace Tracer
         {
             public void Format(Stream outputStream, TraceResult traceResult)
             {
+                string json = FormatToJsonString(traceResult);
+                outputStream.Write(Encoding.UTF8.GetBytes(json));
+            }
+
+            public void Format(TextWriter textWriter, TraceResult traceResult)
+            {
+                string json = FormatToJsonString(traceResult);
+                textWriter.Write(json);
+            }
+
+            private static string FormatToJsonString(TraceResult traceResult)
+            {
                 var jsonSerializerOptions = new JsonSerializerOptions
                 {
                     WriteIndented = true
@@ -21,7 +33,7 @@ namespace Tracer
                     threads = traceResult.ThreadTracers.Values.ToArray()
                 };
                 string json = JsonSerializer.Serialize(root, jsonSerializerOptions);
-                outputStream.Write(Encoding.UTF8.GetBytes(json));
+                return json;
             }
         }
     }
