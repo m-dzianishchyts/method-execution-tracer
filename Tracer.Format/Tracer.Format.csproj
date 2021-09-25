@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Tracer.Core\Tracer.Core.csproj" />
+        <ProjectReference Include="..\Tracer.Core\Tracer.Core.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -14,6 +14,16 @@ namespace Tracer
             private readonly IList<MethodTracer> _nestedMethodTracers;
             private readonly Stopwatch _stopwatch;
 
+            internal MethodTracer(MethodBase method)
+            {
+                MethodName = method.Name;
+                Type declaringType = method.DeclaringType ??
+                                     throw new ArgumentException($"{nameof(method)} has no declaring type.");
+                TypeName = declaringType.Name;
+                _stopwatch = new Stopwatch();
+                _nestedMethodTracers = new List<MethodTracer>();
+            }
+
             [JsonPropertyName(SerializationConfig.JSON_METHOD_CLASS)]
             public string TypeName { get; }
 
@@ -26,16 +36,6 @@ namespace Tracer
 
             [JsonPropertyName(SerializationConfig.JSON_METHOD_INNER_METHODS)]
             public IEnumerable<MethodTracer> NestedMethodTracers => _nestedMethodTracers;
-
-            internal MethodTracer(MethodBase method)
-            {
-                MethodName = method.Name;
-                Type declaringType = method.DeclaringType ??
-                                     throw new ArgumentException($"{nameof(method)} has no declaring type.");
-                TypeName = declaringType.Name;
-                _stopwatch = new Stopwatch();
-                _nestedMethodTracers = new List<MethodTracer>();
-            }
 
             internal void StartTrace()
             {

@@ -110,10 +110,8 @@ namespace Tracer
                                    DEFAULT_THREAD_SLEEP_TIMEOUT, nestedMethodsAmount);
 
                 foreach (MethodTracer nestedMethodTracer in methodTracer.NestedMethodTracers)
-                {
                     AssertMethodTracer(nestedMethodTracer, nameof(TracerTest), nameof(NestedTracedDummy),
                                        DEFAULT_THREAD_SLEEP_TIMEOUT, nestedMethodsAmountInNestedMethod);
-                }
 
                 Assert.AreEqual(threadTracer.ExecutionTime, methodTracer.ExecutionTime);
             }
@@ -125,7 +123,7 @@ namespace Tracer
                 const int methodsAmount = 1;
                 const int nestedMethodsAmount = 0;
                 const int nestedMethodsAmountInNestedMethod = 0;
-                
+
                 var threadIds = new List<int>();
                 var threads = new List<Thread>();
                 for (var i = 0; i < threadsAmount; i++)
@@ -134,6 +132,7 @@ namespace Tracer
                     threads.Add(thread);
                     threadIds.Add(thread.ManagedThreadId);
                 }
+
                 threadIds.Sort();
 
                 threads.ForEach(thread => thread.Start());
@@ -155,10 +154,8 @@ namespace Tracer
                                        DEFAULT_THREAD_SLEEP_TIMEOUT, nestedMethodsAmount);
 
                     foreach (MethodTracer nestedMethodTracer in methodTracer.NestedMethodTracers)
-                    {
                         AssertMethodTracer(nestedMethodTracer, nameof(TracerTest), nameof(NestedTracedDummy),
                                            DEFAULT_THREAD_SLEEP_TIMEOUT, nestedMethodsAmountInNestedMethod);
-                    }
 
                     Assert.AreEqual(threadTracer.ExecutionTime, methodTracer.ExecutionTime);
                 }

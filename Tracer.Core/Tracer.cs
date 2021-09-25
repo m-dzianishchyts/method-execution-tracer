@@ -24,19 +24,11 @@ namespace Tracer
                 threadTracer.StartTrace(targetMethod);
             }
 
-            private static int DetermineCurrentThreadId()
-            {
-                int threadId = Thread.CurrentThread.ManagedThreadId;
-                return threadId;
-            }
-
             public void StopTrace()
             {
                 ThreadTracer? threadsTraceResult;
                 if (!_threadsTraceResults.TryGetValue(DetermineCurrentThreadId(), out threadsTraceResult))
-                {
                     throw new ArgumentException("This thread is not being traced now.");
-                }
 
                 threadsTraceResult.StopTrace();
             }
@@ -49,6 +41,12 @@ namespace Tracer
             public void Reset()
             {
                 _threadsTraceResults.Clear();
+            }
+
+            private static int DetermineCurrentThreadId()
+            {
+                int threadId = Thread.CurrentThread.ManagedThreadId;
+                return threadId;
             }
         }
     }

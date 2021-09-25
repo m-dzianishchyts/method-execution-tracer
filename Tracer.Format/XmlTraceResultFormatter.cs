@@ -63,9 +63,7 @@ namespace Tracer
                 xElement.Add(new XAttribute(SerializationConfig.XML_METHOD_TIME,
                                             TimeFormatUtil.FormatMilliseconds(methodTraceInfo.ExecutionTime)));
                 foreach (MethodTracer nestedMethodTraceInfo in methodTraceInfo.NestedMethodTracers)
-                {
                     xElement.Add(ConvertMethodTracerToXElement(nestedMethodTraceInfo));
-                }
 
                 return xElement;
             }

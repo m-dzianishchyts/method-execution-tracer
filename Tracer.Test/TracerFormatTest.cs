@@ -68,9 +68,7 @@ namespace Tracer
 
                 var threads = new List<Thread>();
                 for (var i = 0; i < threadsAmount; i++)
-                {
                     threads.Add(new Thread(NestedTracedDummyWithNestedCalls));
-                }
 
                 _tracer.StartTrace();
                 threads.ForEach(thread => thread.Start());

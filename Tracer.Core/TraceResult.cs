@@ -7,12 +7,12 @@ namespace Tracer
     {
         public sealed class TraceResult
         {
-            public ImmutableDictionary<int, ThreadTracer> ThreadTracers { get; }
-
             internal TraceResult(IDictionary<int, ThreadTracer> threadsTraceResults)
             {
                 ThreadTracers = threadsTraceResults.ToImmutableDictionary();
             }
+
+            public ImmutableDictionary<int, ThreadTracer> ThreadTracers { get; }
         }
     }
 }
