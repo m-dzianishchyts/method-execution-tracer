@@ -14,8 +14,8 @@ namespace Tracer
             private readonly List<MethodTracer> _methodsTracers;
             private readonly Stack<MethodTracer> _callStack;
 
-            [JsonPropertyName(SerializationConfig.JSON_THREAD_NAME)]
-            public string ThreadName { get; }
+            [JsonPropertyName(SerializationConfig.JSON_THREAD_ID)]
+            public int ThreadId { get; }
 
             [JsonPropertyName(SerializationConfig.JSON_THREAD_TIME)]
             [JsonConverter(typeof(JsonTimeMsConverter))]
@@ -24,9 +24,9 @@ namespace Tracer
             [JsonPropertyName(SerializationConfig.JSON_THREAD_METHODS)]
             public IEnumerable<MethodTracer> MethodsTracers => _methodsTracers;
 
-            internal ThreadTracer(string threadName)
+            internal ThreadTracer(int threadId)
             {
-                ThreadName = threadName;
+                ThreadId = threadId;
                 _callStack = new Stack<MethodTracer>();
                 _methodsTracers = new List<MethodTracer>();
             }

@@ -28,7 +28,7 @@ namespace Tracer
             private static XElement ConvertThreadTracerToXElement(ThreadTracer threadTracer)
             {
                 var threadElement = new XElement(SerializationConfig.XML_THREAD);
-                threadElement.Add(new XAttribute(SerializationConfig.XML_THREAD_NAME, threadTracer.ThreadName));
+                threadElement.Add(new XAttribute(SerializationConfig.XML_THREAD_ID, threadTracer.ThreadId));
                 threadElement.Add(new XAttribute(SerializationConfig.XML_THREAD_TIME,
                                                  TimeFormatUtil.FormatMilliseconds(threadTracer.ExecutionTime)));
                 foreach (MethodTracer methodTracer in threadTracer.MethodsTracers)

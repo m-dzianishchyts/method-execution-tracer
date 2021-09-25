@@ -38,18 +38,18 @@ namespace Tracer
                 _tracer.StopTrace();
 
                 TraceResult traceResult = _tracer.GetTraceResult();
-                ImmutableDictionary<string, ThreadTracer> threadTracers = traceResult.ThreadTracers;
+                ImmutableDictionary<int, ThreadTracer> threadTracers = traceResult.ThreadTracers;
                 Assert.AreEqual(threadTracers.Count, threadsAmount);
 
                 ThreadTracer threadTracer = threadTracers.Values.First();
-                Assert.AreEqual(threadTracer.MethodsTracers.Count(), methodsAmount);
-                AssertThreadName(threadTracer);
+                Assert.AreEqual(methodsAmount, threadTracer.MethodsTracers.Count());
+                Assert.AreEqual(threadTracer.ThreadId, Thread.CurrentThread.ManagedThreadId);
 
                 MethodTracer methodTracer = threadTracer.MethodsTracers.First();
                 AssertMethodTracer(methodTracer, nameof(TracerTest), nameof(BasicTrace),
                                    DEFAULT_THREAD_SLEEP_TIMEOUT, nestedMethodsAmount);
 
-                Assert.AreEqual(threadTracer.ExecutionTime, methodTracer.ExecutionTime);
+                Assert.AreEqual(methodTracer.ExecutionTime, threadTracer.ExecutionTime);
             }
 
             [Test]
@@ -65,12 +65,12 @@ namespace Tracer
                 _tracer.StopTrace();
 
                 TraceResult traceResult = _tracer.GetTraceResult();
-                ImmutableDictionary<string, ThreadTracer> threadTracers = traceResult.ThreadTracers;
+                ImmutableDictionary<int, ThreadTracer> threadTracers = traceResult.ThreadTracers;
                 Assert.AreEqual(threadTracers.Count, threadsAmount);
 
                 ThreadTracer threadTracer = threadTracers.Values.First();
-                Assert.AreEqual(threadTracer.MethodsTracers.Count(), methodsAmount);
-                AssertThreadName(threadTracer);
+                Assert.AreEqual(methodsAmount, threadTracer.MethodsTracers.Count());
+                Assert.AreEqual(threadTracer.ThreadId, Thread.CurrentThread.ManagedThreadId);
 
                 MethodTracer methodTracer = threadTracer.MethodsTracers.First();
                 AssertMethodTracer(methodTracer, nameof(TracerTest), nameof(OneNestedMethodTrace),
@@ -80,9 +80,9 @@ namespace Tracer
                 AssertMethodTracer(nestedMethodTracer, nameof(TracerTest), nameof(NestedTracedDummy),
                                    DEFAULT_THREAD_SLEEP_TIMEOUT, nestedMethodsAmountInNestedMethod);
 
-                Assert.AreEqual(threadTracer.ExecutionTime, methodTracer.ExecutionTime);
+                Assert.AreEqual(methodTracer.ExecutionTime, threadTracer.ExecutionTime);
             }
-            
+
             [Test]
             public void SeveralNestedMethodTrace()
             {
@@ -97,12 +97,12 @@ namespace Tracer
                 _tracer.StopTrace();
 
                 TraceResult traceResult = _tracer.GetTraceResult();
-                ImmutableDictionary<string, ThreadTracer> threadTracers = traceResult.ThreadTracers;
-                Assert.AreEqual(threadTracers.Count, threadsAmount);
+                ImmutableDictionary<int, ThreadTracer> threadTracers = traceResult.ThreadTracers;
+                Assert.AreEqual(threadsAmount, threadTracers.Count);
 
                 ThreadTracer threadTracer = threadTracers.Values.First();
-                Assert.AreEqual(threadTracer.MethodsTracers.Count(), methodsAmount);
-                AssertThreadName(threadTracer);
+                Assert.AreEqual(methodsAmount, threadTracer.MethodsTracers.Count());
+                Assert.AreEqual(threadTracer.ThreadId, Thread.CurrentThread.ManagedThreadId);
 
                 MethodTracer methodTracer = threadTracer.MethodsTracers.First();
                 AssertMethodTracer(methodTracer, nameof(TracerTest), nameof(SeveralNestedMethodTrace),
@@ -113,7 +113,7 @@ namespace Tracer
                     AssertMethodTracer(nestedMethodTracer, nameof(TracerTest), nameof(NestedTracedDummy),
                                        DEFAULT_THREAD_SLEEP_TIMEOUT, nestedMethodsAmountInNestedMethod);
                 }
-                
+
                 Assert.AreEqual(threadTracer.ExecutionTime, methodTracer.ExecutionTime);
             }
 
@@ -128,18 +128,10 @@ namespace Tracer
                                                    string expectedMethodName,
                                                    int expectedExecutionTime, int expectedNestedMethodsAmount)
             {
-                Assert.AreEqual(methodTracer.TypeName, expectedClassName);
-                Assert.AreEqual(methodTracer.MethodName, expectedMethodName);
-                Assert.Greater(methodTracer.ExecutionTime, expectedExecutionTime);
-                Assert.AreEqual(methodTracer.NestedMethodTracers.Count(), expectedNestedMethodsAmount);
-            }
-
-            private static void AssertThreadName(ThreadTracer threadTracer)
-            {
-                if (Thread.CurrentThread.Name != null)
-                    Assert.AreEqual(threadTracer.ThreadName, Thread.CurrentThread.Name);
-                else
-                    Assert.AreEqual(threadTracer.ThreadName, Thread.CurrentThread.ManagedThreadId);
+                Assert.AreEqual(expectedClassName, methodTracer.TypeName);
+                Assert.AreEqual(expectedMethodName, methodTracer.MethodName);
+                Assert.GreaterOrEqual(methodTracer.ExecutionTime, expectedExecutionTime);
+                Assert.AreEqual(expectedNestedMethodsAmount, methodTracer.NestedMethodTracers.Count());
             }
         }
     }

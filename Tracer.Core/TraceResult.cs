@@ -7,9 +7,9 @@ namespace Tracer
     {
         public sealed class TraceResult
         {
-            public ImmutableDictionary<string, ThreadTracer> ThreadTracers { get; }
+            public ImmutableDictionary<int, ThreadTracer> ThreadTracers { get; }
 
-            internal TraceResult(IDictionary<string, ThreadTracer> threadsTraceResults)
+            internal TraceResult(IDictionary<int, ThreadTracer> threadsTraceResults)
             {
                 ThreadTracers = threadsTraceResults.ToImmutableDictionary();
             }
