@@ -46,6 +46,11 @@ namespace Tracer
             {
                 return new TraceResult(_threadsTraceResults);
             }
+
+            public void Reset()
+            {
+                _threadsTraceResults.Clear();
+            }
         }
     }
 }

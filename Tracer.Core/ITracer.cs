@@ -23,6 +23,11 @@
             /// <returns>Tracing results for each thread used in tracing.</returns>
             /// </summary>
             TraceResult GetTraceResult();
+
+            /// <summary>
+            /// Reset tracing statistics.
+            /// </summary>
+            void Reset();
         }
     }
 }
