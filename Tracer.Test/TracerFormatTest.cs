@@ -35,6 +35,7 @@ namespace Tracer
             {
                 GeneralTrace();
                 FormatTraceResultToFile(filePath, new JsonTraceResultFormatter());
+                FormatTraceResultToConsole(new JsonTraceResultFormatter());
                 CheckJsonFile(filePath);
             }
 
@@ -44,6 +45,7 @@ namespace Tracer
             {
                 GeneralTrace();
                 FormatTraceResultToFile(filePath, new XmlTraceResultFormatter());
+                FormatTraceResultToConsole(new XmlTraceResultFormatter());
                 CheckXmlFile(filePath);
             }
 
@@ -52,6 +54,12 @@ namespace Tracer
                 using Stream outputStream = new FileStream(filePath, FileMode.Create);
                 TraceResult traceResult = _tracer.GetTraceResult();
                 traceResultFormatter.Format(outputStream, traceResult);
+            }
+
+            private void FormatTraceResultToConsole(ITraceResultFormatter traceResultFormatter)
+            {
+                TraceResult traceResult = _tracer.GetTraceResult();
+                traceResultFormatter.Format(TestContext.Out, traceResult);
             }
 
             private void GeneralTrace()
