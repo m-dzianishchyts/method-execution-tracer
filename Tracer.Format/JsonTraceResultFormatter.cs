@@ -18,7 +18,7 @@ namespace Tracer
                 };
                 var root = new
                 {
-                    threads = traceResult.ThreadsTraceResults.Values.ToArray()
+                    threads = traceResult.ThreadTracers.Values.ToArray()
                 };
                 string json = JsonSerializer.Serialize(root, jsonSerializerOptions);
                 outputStream.Write(Encoding.UTF8.GetBytes(json));

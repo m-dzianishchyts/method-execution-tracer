@@ -13,7 +13,7 @@ namespace Tracer
             {
                 var xDocument = new XDocument();
                 var rootElement = new XElement(SerializationConfig.XML_ROOT);
-                foreach (ThreadTracer threadTracer in traceResult.ThreadsTraceResults.Values)
+                foreach (ThreadTracer threadTracer in traceResult.ThreadTracers.Values)
                 {
                     XElement threadElement = ConvertThreadTracerToXElement(threadTracer);
                     rootElement.Add(threadElement);
@@ -47,7 +47,7 @@ namespace Tracer
                 xElement.Add(new XAttribute(SerializationConfig.XML_METHOD_NAME, methodTraceInfo.MethodName));
                 xElement.Add(new XAttribute(SerializationConfig.XML_METHOD_TIME,
                                             TimeFormatUtil.FormatMilliseconds(methodTraceInfo.ExecutionTime)));
-                foreach (MethodTracer nestedMethodTraceInfo in methodTraceInfo.NestedMethodsTracers)
+                foreach (MethodTracer nestedMethodTraceInfo in methodTraceInfo.NestedMethodTracers)
                 {
                     xElement.Add(ConvertMethodTracerToXElement(nestedMethodTraceInfo));
                 }
