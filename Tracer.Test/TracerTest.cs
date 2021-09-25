@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using NUnit.Framework;
@@ -115,6 +116,52 @@ namespace Tracer
                 }
 
                 Assert.AreEqual(threadTracer.ExecutionTime, methodTracer.ExecutionTime);
+            }
+
+            [Test]
+            public void MultithreadingTrace()
+            {
+                const int threadsAmount = 3;
+                const int methodsAmount = 1;
+                const int nestedMethodsAmount = 0;
+                const int nestedMethodsAmountInNestedMethod = 0;
+                
+                var threadIds = new List<int>();
+                var threads = new List<Thread>();
+                for (var i = 0; i < threadsAmount; i++)
+                {
+                    var thread = new Thread(NestedTracedDummy);
+                    threads.Add(thread);
+                    threadIds.Add(thread.ManagedThreadId);
+                }
+                threadIds.Sort();
+
+                threads.ForEach(thread => thread.Start());
+                threads.ForEach(thread => thread.Join());
+
+                TraceResult traceResult = _tracer.GetTraceResult();
+                ImmutableDictionary<int, ThreadTracer> threadTracers = traceResult.ThreadTracers;
+                Assert.AreEqual(threadsAmount, threadTracers.Count);
+
+                var sortedThreadTracers = new SortedList<int, ThreadTracer>(threadTracers);
+                for (var i = 0; i < sortedThreadTracers.Values.Count; i++)
+                {
+                    ThreadTracer threadTracer = sortedThreadTracers.Values[i];
+                    Assert.AreEqual(threadTracer.MethodsTracers.Count(), methodsAmount);
+                    Assert.AreEqual(threadTracer.ThreadId, threadIds[i]);
+
+                    MethodTracer methodTracer = threadTracer.MethodsTracers.First();
+                    AssertMethodTracer(methodTracer, nameof(TracerTest), nameof(NestedTracedDummy),
+                                       DEFAULT_THREAD_SLEEP_TIMEOUT, nestedMethodsAmount);
+
+                    foreach (MethodTracer nestedMethodTracer in methodTracer.NestedMethodTracers)
+                    {
+                        AssertMethodTracer(nestedMethodTracer, nameof(TracerTest), nameof(NestedTracedDummy),
+                                           DEFAULT_THREAD_SLEEP_TIMEOUT, nestedMethodsAmountInNestedMethod);
+                    }
+
+                    Assert.AreEqual(threadTracer.ExecutionTime, methodTracer.ExecutionTime);
+                }
             }
 
             private void NestedTracedDummy()
