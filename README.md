@@ -193,3 +193,10 @@ public class C
 * Модульные тесты для основной части библиотеки.
 * Консольное приложение, содержащее классы для вывода результатов в консоль и файл, классы для сериализации, 
   и демонстрирующее общий случай работы библиотеки (в многопоточном режиме при трассировке вложенных методов).
+  
+### Работы по курсу
+* [Method Execution Tracer](https://github.com/maxiemar/method-execution-tracer)
+* [Objects Creation Faker](https://github.com/maxiemar/objects-creation-faker)
+* [Assembly Browser](https://github.com/maxiemar/assembly-browser)
+* [NUnit Test Generator](https://github.com/maxiemar/nunit-test-generator)
+* [Dependency Injection Container](https://github.com/maxiemar/dependency-injection-container)
